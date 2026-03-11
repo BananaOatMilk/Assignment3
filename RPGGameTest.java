@@ -1,6 +1,9 @@
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -173,5 +176,72 @@ public class RPGGameTest {
         HumanPlayer human = new HumanPlayer("Alice", scanner);
 
         assertEquals(Move.ROCK, human.makeMove(1));
+    }
+
+    // ---------- E) Main CLI Tests ----------
+    @Test
+    public void main_runsGame() throws Exception {
+        StringBuilder input = new StringBuilder();
+        for (int i = 0; i < 20; i++) {
+            input.append("1\n");
+        }
+
+        String output = runMainWithInput(input.toString());
+
+        assertTrue(output.contains("Command-Line Rock-Paper-Scissors"));
+        assertEquals(20, countOccurrences(output, " - Choose (1=rock, 2=paper, 3=scissors): "));
+        assertEquals(20, countOccurrences(output, "Score: Human:"));
+        assertTrue(output.contains("Final Score"));
+        assertTrue(
+            output.contains("Overall Winner: Human")
+                || output.contains("Overall Winner: Computer")
+                || output.contains("Overall Result: Draw")
+        );
+    }
+
+    @Test
+    public void main_handlesInvalidInput() throws Exception {
+        StringBuilder input = new StringBuilder();
+        input.append("x\n9\n");
+        for (int i = 0; i < 20; i++) {
+            input.append("1\n");
+        }
+
+        String output = runMainWithInput(input.toString());
+
+        assertTrue(output.contains("Invalid choice. Please try again."));
+        assertEquals(2, countOccurrences(output, "Invalid choice. Please try again."));
+        assertEquals(22, countOccurrences(output, " - Choose (1=rock, 2=paper, 3=scissors): "));
+        assertTrue(output.contains("Final Score"));
+    }
+
+    private static String runMainWithInput(String input) throws Exception {
+        InputStream originalIn = System.in;
+        PrintStream originalOut = System.out;
+
+        ByteArrayInputStream testIn = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
+        ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
+        PrintStream testOut = new PrintStream(outBytes, true, "UTF-8");
+
+        try {
+            System.setIn(testIn);
+            System.setOut(testOut);
+            Main.main(new String[0]);
+            return outBytes.toString("UTF-8");
+        } finally {
+            System.setIn(originalIn);
+            System.setOut(originalOut);
+            testOut.close();
+        }
+    }
+
+    private static int countOccurrences(String text, String token) {
+        int count = 0;
+        int index = 0;
+        while ((index = text.indexOf(token, index)) != -1) {
+            count++;
+            index += token.length();
+        }
+        return count;
     }
 }
