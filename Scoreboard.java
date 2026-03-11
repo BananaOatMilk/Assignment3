@@ -1,36 +1,35 @@
-import rps.RoundResult;
-
 public class Scoreboard {
 
     private int p1Wins;
     private int p2Wins;
     private int draws;
 
-    public Scoreboard(){
+    public Scoreboard() {
         p1Wins = 0;
         p2Wins = 0;
         draws = 0;
     }
 
-    public void record(RoundResult result){
-        switch(result){
-            case RoundResult.HUMAN_WIN:
+    public void record(RoundResult result) {
+        switch (result) {
+            case HUMAN_WIN:
                 p1Wins++;
                 break;
-            case RoundResult.COMPUTER_WIN:
+            case COMPUTER_WIN:
                 p2Wins++;
                 break;
             case DRAW:
                 draws++;
                 break;
-        }  
-             
+            default:
+                throw new IllegalArgumentException("Unknown round result: " + result);
+        }
     }
 
-    public RoundResult getOverallWinner(){
-        if(p1Wins > p2Wins){
+    public RoundResult getOverallWinner() {
+        if (p1Wins > p2Wins) {
             return RoundResult.HUMAN_WIN;
-        } else if (p1Wins > p2Wins){
+        } else if (p2Wins > p1Wins) {
             return RoundResult.COMPUTER_WIN;
         } else {
             return RoundResult.DRAW;
