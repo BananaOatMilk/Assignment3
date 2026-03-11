@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class HumanPlayer {
+public class HumanPlayer implements Player {
     private String name;
     private final Scanner scanner;
 
@@ -19,17 +19,24 @@ public class HumanPlayer {
     }
 
     @Override
-    public Game makeMove(int round){
-        while(true){
-            System.out.print("Round " + round + "\nChoose: Rock = 1, Paper = 2, Scissors = 3");
+    public Move makeMove(int round) {
+        while (true) {
+            System.out.print("Round " + round + "\nChoose: Rock = 1, Paper = 2, Scissors = 3\n");
+
+            if (!scanner.hasNextInt()) {
+                scanner.next();
+                System.out.println("Invalid choice. Please try again.");
+                continue;
+            }
+
             int choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    return new Game(Move.ROCK);
+                    return Move.ROCK;
                 case 2:
-                    return new Game(Move.PAPER);
+                    return Move.PAPER;
                 case 3:
-                    return new Game(Move.SCISSORS);
+                    return Move.SCISSORS;
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
