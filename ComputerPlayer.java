@@ -1,7 +1,22 @@
-public class Computer {
+public class ComputerPlayer {
+
+    private String name;
+
+    public ComputerPlayer(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
     public Move makeMove(){
         int random = (int) (Math.random() * 3) + 1;
-        switch (random) {
+        switch(random) {
             case 1:
                 return Move.ROCK;
             case 2:
@@ -9,5 +24,10 @@ public class Computer {
             default:
                 return Move.SCISSORS;
         }
+    }
+
+    @Override
+    public String toString(){
+        return "Player: " + name;
     }
 }
