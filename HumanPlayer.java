@@ -21,7 +21,7 @@ public class HumanPlayer implements Player {
     @Override
     public Move makeMove(int round) {
         while (true) {
-            System.out.print("Round " + round + "\nChoose: Rock = 1, Paper = 2, Scissors = 3\n");
+            System.out.print("Round " + round + " - Choose (1=rock, 2=paper, 3=scissors): ");
 
             if (!scanner.hasNextInt()) {
                 scanner.next();
