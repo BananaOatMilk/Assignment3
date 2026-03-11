@@ -1,4 +1,4 @@
-public class ComputerPlayer {
+public class ComputerPlayer implements Player {
 
     private String name;
 
@@ -14,7 +14,8 @@ public class ComputerPlayer {
         this.name = name;
     }
 
-    public Move makeMove(){
+    @Override
+    public Move makeMove(int round){
         int random = (int) (Math.random() * 3) + 1;
         switch(random) {
             case 1:
