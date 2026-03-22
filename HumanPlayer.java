@@ -14,10 +14,6 @@ public class HumanPlayer implements Player {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public Move makeMove(int round) {
         while (true) {

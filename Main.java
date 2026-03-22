@@ -10,7 +10,8 @@ public final class Main {
         Scanner scanner = new Scanner(System.in);
 
         Player humanPlayer = new HumanPlayer("Human", scanner);
-        Player computerPlayer = new ComputerRandomPlayer();
+        ComputerChoiceStrategy strategy = new RandomChoiceStrategy(); // temp
+        Player computerPlayer = new ComputerPlayer(strategy); // temp
         RuleEngine ruleEngine = new StandardRpsRuleEngine();
         GameEngine gameEngine = new GameEngine(ruleEngine);
         Scoreboard scoreboard = new Scoreboard();
