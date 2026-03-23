@@ -1,7 +1,7 @@
-public class ComputerPlayer implements Player{
+public class ComputerPlayer implements Player {
     private final ComputerChoiceStrategy strategy;
 
-    public ComputerPlayer(ComputerChoiceStrategy strategy){
+    public ComputerPlayer(ComputerChoiceStrategy strategy) {
         this.strategy = strategy;
     }
 
@@ -17,5 +17,4 @@ public class ComputerPlayer implements Player{
     public void saveLearning() {
         strategy.saveLearning();
     }
-
 }
