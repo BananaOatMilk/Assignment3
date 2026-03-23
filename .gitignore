@@ -1,4 +1,4 @@
 .DS_Store
 tmp/
 *.class
-ml-frequency-data.txt
+ml_frequency_data.txt

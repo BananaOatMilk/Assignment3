@@ -5,7 +5,7 @@ import java.nio.file.Path;
 public final class Main {
     private static final int TOTAL_ROUNDS = 20;
     private static final int ML_WINDOW_SIZE = 5;
-    private static final Path ML_DATA_FILE = Path.of("ml-frequency-data.txt");
+    private static final Path ML_DATA_FILE = Path.of("ml_frequency_data.txt");
 
     private Main() {
     }
