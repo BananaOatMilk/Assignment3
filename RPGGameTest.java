@@ -186,7 +186,7 @@ public class RPGGameTest {
             input.append("1\n");
         }
 
-        String output = runMainWithInput(input.toString());
+        String output = runMainWithInput(input.toString(), "-r");
 
         assertTrue(output.contains("Command-Line Rock-Paper-Scissors"));
         assertEquals(20, countOccurrences(output, " - Choose (1=rock, 2=paper, 3=scissors): "));
@@ -207,7 +207,7 @@ public class RPGGameTest {
             input.append("1\n");
         }
 
-        String output = runMainWithInput(input.toString());
+        String output = runMainWithInput(input.toString(), "-r");
 
         assertTrue(output.contains("Invalid choice. Please try again."));
         assertEquals(2, countOccurrences(output, "Invalid choice. Please try again."));
@@ -215,7 +215,7 @@ public class RPGGameTest {
         assertTrue(output.contains("Final Score"));
     }
 
-    private static String runMainWithInput(String input) throws Exception {
+    private static String runMainWithInput(String input, String... args) throws Exception {
         InputStream originalIn = System.in;
         PrintStream originalOut = System.out;
 
@@ -226,7 +226,7 @@ public class RPGGameTest {
         try {
             System.setIn(testIn);
             System.setOut(testOut);
-            Main.main(new String[0]);
+            Main.main(args);
             return outBytes.toString("UTF-8");
         } finally {
             System.setIn(originalIn);

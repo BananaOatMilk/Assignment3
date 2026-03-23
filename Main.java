@@ -11,13 +11,13 @@ public final class Main {
     }
 
     public static void main(String[] args) {
-        ComputerMode computerMode = parseComputerMode(args);
+        Scanner scanner = new Scanner(System.in);
+        ComputerMode computerMode = parseComputerMode(args, scanner);
         if (computerMode == null) {
             printUsage();
+            scanner.close();
             return;
         }
-
-        Scanner scanner = new Scanner(System.in);
 
         Player humanPlayer = new HumanPlayer("Human", scanner);
         MachineLearningChoiceAlgorithm mlAlgorithm = null;
@@ -54,9 +54,9 @@ public final class Main {
         scanner.close();
     }
 
-    private static ComputerMode parseComputerMode(String[] args) {
+    private static ComputerMode parseComputerMode(String[] args, Scanner scanner) {
         if (args == null || args.length == 0) {
-            return ComputerMode.RANDOM;
+            return promptForComputerMode(scanner);
         }
 
         if (args.length != 1) {
@@ -70,6 +70,21 @@ public final class Main {
             return ComputerMode.MACHINE_LEARNING;
         }
         return null;
+    }
+
+    private static ComputerMode promptForComputerMode(Scanner scanner) {
+        while (true) {
+            System.out.print("Choose computer mode: random (r) or machine learning (m) [default r]: ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty() || "r".equalsIgnoreCase(input)) {
+                return ComputerMode.RANDOM;
+            }
+            if ("m".equalsIgnoreCase(input)) {
+                return ComputerMode.MACHINE_LEARNING;
+            }
+            System.out.println("Invalid mode. Enter r or m.");
+        }
     }
 
     private static void printUsage() {
