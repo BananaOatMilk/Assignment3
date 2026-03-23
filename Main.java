@@ -13,26 +13,25 @@ public final class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean interactiveMode = args == null || args.length == 0;
-        ComputerMode computerMode = parseComputerMode(args, scanner);
-        if (computerMode == null) {
+        ComputerMode fixedMode = parseComputerMode(args);
+        if (!interactiveMode && fixedMode == null) {
             printUsage();
             scanner.close();
             return;
         }
-
-        MachineLearningChoiceAlgorithm mlAlgorithm = null;
-        if (computerMode == ComputerMode.MACHINE_LEARNING) {
-            mlAlgorithm = new MachineLearningChoiceAlgorithm(ML_WINDOW_SIZE, ML_DATA_FILE);
-        }
         do {
+            ComputerMode computerMode = interactiveMode ? promptForComputerMode(scanner) : fixedMode;
+            MachineLearningChoiceAlgorithm mlAlgorithm = computerMode == ComputerMode.MACHINE_LEARNING
+                ? new MachineLearningChoiceAlgorithm(ML_WINDOW_SIZE, ML_DATA_FILE)
+                : null;
             playSingleGame(scanner, computerMode, mlAlgorithm);
         } while (interactiveMode && promptPlayAgain(scanner));
         scanner.close();
     }
 
-    private static ComputerMode parseComputerMode(String[] args, Scanner scanner) {
+    private static ComputerMode parseComputerMode(String[] args) {
         if (args == null || args.length == 0) {
-            return promptForComputerMode(scanner);
+            return ComputerMode.RANDOM;
         }
 
         if (args.length != 1) {
@@ -50,8 +49,11 @@ public final class Main {
 
     private static ComputerMode promptForComputerMode(Scanner scanner) {
         while (true) {
-            System.out.print("Choose computer mode: random (r) or machine learning (m) [default r]: ");
-            String input = scanner.nextLine().trim();
+            System.out.print("Choose computer mode: random (r) or machine learning (m): ");
+            if (!scanner.hasNext()) {
+                return ComputerMode.RANDOM;
+            }
+            String input = scanner.next().trim();
 
             if (input.isEmpty() || "r".equalsIgnoreCase(input)) {
                 return ComputerMode.RANDOM;
