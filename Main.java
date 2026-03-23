@@ -21,10 +21,10 @@ public final class Main {
         }
         do {
             ComputerMode computerMode = interactiveMode ? promptForComputerMode(scanner) : fixedMode;
-            MachineLearningChoiceAlgorithm mlAlgorithm = computerMode == ComputerMode.MACHINE_LEARNING
+            ComputerChoiceAlgorithm choiceAlgorithm = computerMode == ComputerMode.MACHINE_LEARNING
                 ? new MachineLearningChoiceAlgorithm(ML_WINDOW_SIZE, ML_DATA_FILE)
-                : null;
-            playSingleGame(scanner, computerMode, mlAlgorithm);
+                : new RandomChoiceAlgorithm();
+            playSingleGame(scanner, computerMode, choiceAlgorithm);
         } while (interactiveMode && promptPlayAgain(scanner));
         scanner.close();
     }
@@ -71,23 +71,21 @@ public final class Main {
         System.out.println("  -m  Use machine-learning computer choices");
     }
 
-    private static void saveMlData(MachineLearningChoiceAlgorithm mlAlgorithm) {
+    private static void saveComputerData(ComputerPlayer computerPlayer) {
         try {
-            mlAlgorithm.saveData();
+            computerPlayer.finishGame();
         } catch (IOException e) {
-            System.out.println("Warning: unable to save ML frequency data.");
+            System.out.println("Warning: unable to save computer choice data.");
         }
     }
 
     private static void playSingleGame(
         Scanner scanner,
         ComputerMode computerMode,
-        MachineLearningChoiceAlgorithm mlAlgorithm
+        ComputerChoiceAlgorithm choiceAlgorithm
     ) {
         Player humanPlayer = new HumanPlayer("Human", scanner);
-        Player computerPlayer = computerMode == ComputerMode.MACHINE_LEARNING
-            ? new MachineLearningPlayer(mlAlgorithm)
-            : new ComputerRandomPlayer();
+        ComputerPlayer computerPlayer = new ComputerPlayer("Computer", choiceAlgorithm);
         RuleEngine ruleEngine = new StandardRpsRuleEngine();
         GameEngine gameEngine = new GameEngine(ruleEngine);
         Scoreboard scoreboard = new Scoreboard();
@@ -99,17 +97,13 @@ public final class Main {
 
         for (int round = 1; round <= TOTAL_ROUNDS; round++) {
             RoundOutcome outcome = gameEngine.playRound(humanPlayer, computerPlayer, round);
-            if (mlAlgorithm != null) {
-                mlAlgorithm.recordRound(outcome.getHumanMove(), outcome.getComputerMove());
-            }
+            computerPlayer.recordRound(outcome.getHumanMove(), outcome.getComputerMove());
             scoreboard.record(outcome.getResult());
             printRoundSummary(outcome, scoreboard);
         }
 
         printFinalSummary(scoreboard);
-        if (mlAlgorithm != null) {
-            saveMlData(mlAlgorithm);
-        }
+        saveComputerData(computerPlayer);
     }
 
     private static boolean promptPlayAgain(Scanner scanner) {

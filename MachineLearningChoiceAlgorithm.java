@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
-public final class MachineLearningChoiceAlgorithm {
+public final class MachineLearningChoiceAlgorithm implements ComputerChoiceAlgorithm {
     private final int windowSize;
     private final Path dataFile;
     private final Random random;
@@ -66,6 +66,12 @@ public final class MachineLearningChoiceAlgorithm {
         return counterMove(predictedHumanMove);
     }
 
+    @Override
+    public Move chooseMove(int round) {
+        return chooseMove();
+    }
+
+    @Override
     public void recordRound(Move humanMove, Move computerMove) {
         Objects.requireNonNull(humanMove, "humanMove cannot be null");
         Objects.requireNonNull(computerMove, "computerMove cannot be null");
@@ -76,6 +82,11 @@ public final class MachineLearningChoiceAlgorithm {
             sequenceFrequency.merge(sequence, 1, Integer::sum);
         }
         appendChoice(computerMove);
+    }
+
+    @Override
+    public void finishGame() throws IOException {
+        saveData();
     }
 
     public void saveData() throws IOException {

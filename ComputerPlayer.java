@@ -1,34 +1,34 @@
-public class ComputerPlayer implements Player {
+import java.io.IOException;
+import java.util.Objects;
 
-    private String name;
+public final class ComputerPlayer implements Player {
+    private final String name;
+    private final ComputerChoiceAlgorithm choiceAlgorithm;
 
-    public ComputerPlayer(String name){
-        this.name = name;
+    public ComputerPlayer(String name, ComputerChoiceAlgorithm choiceAlgorithm) {
+        this.name = Objects.requireNonNull(name, "name cannot be null");
+        this.choiceAlgorithm = Objects.requireNonNull(choiceAlgorithm, "choiceAlgorithm cannot be null");
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
-        this.name = name;
+    @Override
+    public Move makeMove(int round) {
+        return choiceAlgorithm.chooseMove(round);
+    }
+
+    public void recordRound(Move humanMove, Move computerMove) {
+        choiceAlgorithm.recordRound(humanMove, computerMove);
+    }
+
+    public void finishGame() throws IOException {
+        choiceAlgorithm.finishGame();
     }
 
     @Override
-    public Move makeMove(int round){
-        int random = (int) (Math.random() * 3) + 1;
-        switch(random) {
-            case 1:
-                return Move.ROCK;
-            case 2:
-                return Move.PAPER;
-            default:
-                return Move.SCISSORS;
-        }
-    }
-
-    @Override
-    public String toString(){
+    public String toString() {
         return "Player: " + name;
     }
 }
