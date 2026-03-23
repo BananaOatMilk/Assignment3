@@ -12,6 +12,7 @@ public final class Main {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        boolean interactiveMode = args == null || args.length == 0;
         ComputerMode computerMode = parseComputerMode(args, scanner);
         if (computerMode == null) {
             printUsage();
@@ -19,38 +20,13 @@ public final class Main {
             return;
         }
 
-        Player humanPlayer = new HumanPlayer("Human", scanner);
         MachineLearningChoiceAlgorithm mlAlgorithm = null;
-        Player computerPlayer;
         if (computerMode == ComputerMode.MACHINE_LEARNING) {
             mlAlgorithm = new MachineLearningChoiceAlgorithm(ML_WINDOW_SIZE, ML_DATA_FILE);
-            computerPlayer = new MachineLearningPlayer(mlAlgorithm);
-        } else {
-            computerPlayer = new ComputerRandomPlayer();
         }
-
-        RuleEngine ruleEngine = new StandardRpsRuleEngine();
-        GameEngine gameEngine = new GameEngine(ruleEngine);
-        Scoreboard scoreboard = new Scoreboard();
-
-        System.out.println("Command-Line Rock-Paper-Scissors");
-        System.out.println("--------------------------------");
-        System.out.println("Computer mode: " + (computerMode == ComputerMode.MACHINE_LEARNING ? "ML" : "Random"));
-        System.out.println();
-
-        for (int round = 1; round <= TOTAL_ROUNDS; round++) {
-            RoundOutcome outcome = gameEngine.playRound(humanPlayer, computerPlayer, round);
-            if (mlAlgorithm != null) {
-                mlAlgorithm.recordRound(outcome.getHumanMove(), outcome.getComputerMove());
-            }
-            scoreboard.record(outcome.getResult());
-            printRoundSummary(outcome, scoreboard);
-        }
-
-        printFinalSummary(scoreboard);
-        if (mlAlgorithm != null) {
-            saveMlData(mlAlgorithm);
-        }
+        do {
+            playSingleGame(scanner, computerMode, mlAlgorithm);
+        } while (interactiveMode && promptPlayAgain(scanner));
         scanner.close();
     }
 
@@ -98,6 +74,58 @@ public final class Main {
             mlAlgorithm.saveData();
         } catch (IOException e) {
             System.out.println("Warning: unable to save ML frequency data.");
+        }
+    }
+
+    private static void playSingleGame(
+        Scanner scanner,
+        ComputerMode computerMode,
+        MachineLearningChoiceAlgorithm mlAlgorithm
+    ) {
+        Player humanPlayer = new HumanPlayer("Human", scanner);
+        Player computerPlayer = computerMode == ComputerMode.MACHINE_LEARNING
+            ? new MachineLearningPlayer(mlAlgorithm)
+            : new ComputerRandomPlayer();
+        RuleEngine ruleEngine = new StandardRpsRuleEngine();
+        GameEngine gameEngine = new GameEngine(ruleEngine);
+        Scoreboard scoreboard = new Scoreboard();
+
+        System.out.println("Command-Line Rock-Paper-Scissors");
+        System.out.println("--------------------------------");
+        System.out.println("Computer mode: " + (computerMode == ComputerMode.MACHINE_LEARNING ? "ML" : "Random"));
+        System.out.println();
+
+        for (int round = 1; round <= TOTAL_ROUNDS; round++) {
+            RoundOutcome outcome = gameEngine.playRound(humanPlayer, computerPlayer, round);
+            if (mlAlgorithm != null) {
+                mlAlgorithm.recordRound(outcome.getHumanMove(), outcome.getComputerMove());
+            }
+            scoreboard.record(outcome.getResult());
+            printRoundSummary(outcome, scoreboard);
+        }
+
+        printFinalSummary(scoreboard);
+        if (mlAlgorithm != null) {
+            saveMlData(mlAlgorithm);
+        }
+    }
+
+    private static boolean promptPlayAgain(Scanner scanner) {
+        while (true) {
+            System.out.print("Play again? (y/n): ");
+            if (!scanner.hasNext()) {
+                return false;
+            }
+
+            String input = scanner.next().trim();
+            if ("y".equalsIgnoreCase(input) || "yes".equalsIgnoreCase(input)) {
+                System.out.println();
+                return true;
+            }
+            if ("n".equalsIgnoreCase(input) || "no".equalsIgnoreCase(input)) {
+                return false;
+            }
+            System.out.println("Invalid choice. Please enter y or n.");
         }
     }
 
