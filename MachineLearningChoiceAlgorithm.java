@@ -19,6 +19,7 @@ public final class MachineLearningChoiceAlgorithm implements ComputerChoiceAlgor
     private final Random random;
     private final Deque<Move> recentChoices;
     private final Map<String, Integer> sequenceFrequency;
+    private Move lastPredictedHumanMove;
 
     public MachineLearningChoiceAlgorithm(int windowSize, Path dataFile) {
         this(windowSize, dataFile, new Random());
@@ -38,6 +39,8 @@ public final class MachineLearningChoiceAlgorithm implements ComputerChoiceAlgor
     }
 
     public Move chooseMove() {
+        lastPredictedHumanMove = null;
+
         if (recentChoices.size() < windowSize - 1) {
             return randomMove();
         }
@@ -62,8 +65,8 @@ public final class MachineLearningChoiceAlgorithm implements ComputerChoiceAlgor
             return randomMove();
         }
 
-        Move predictedHumanMove = bestPredictions.get(random.nextInt(bestPredictions.size()));
-        return counterMove(predictedHumanMove);
+        lastPredictedHumanMove = bestPredictions.get(random.nextInt(bestPredictions.size()));
+        return counterMove(lastPredictedHumanMove);
     }
 
     @Override
@@ -198,5 +201,9 @@ public final class MachineLearningChoiceAlgorithm implements ComputerChoiceAlgor
             default:
                 throw new IllegalStateException("Unexpected move: " + predictedHumanMove);
         }
+    }
+
+    public Move getLastPredictedHumanMove() {
+        return lastPredictedHumanMove;
     }
 }
